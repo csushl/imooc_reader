@@ -28,13 +28,13 @@
     <van-nav-bar @click-right="clickRight">
         <template #left>
             <a href="/" style="padding-top: 10px">
-                <img src="https://m.imooc.com/static/wap/static/common/img/logo2.png" style="width: 80px">
+                <img src="/images/logo2.png" style="width: 80px">
             </a>
         </template>
         <template #right>
             <!-- 根据会员登录状态决定显示昵称还是登录按钮 -->
             <template v-if="state.isLogin">
-                <img src="/images/user_icon.png" style="height:30px">{{member.nickname}}
+                <img src="/images/user_icon.png" style="height:30px">{{state.member.nickname}}
             </template>
             <template v-if="!state.isLogin">
                 <img src="/images/user_icon.png" style="height: 30px">
@@ -201,20 +201,34 @@
         , mounted() {
             //页面初始化时执行的操作
             const objApp = this;
+            this.onchange(true);
             axios.get("/api/category/list")
-                .then(function (response) {
+                .then(function(response){
                     const json = response.data;
-                    if (json.code == "0") {
-                        json.data.list.forEach(function (item) {
+                    if(json.code == "0"){
+                        json.data.list.forEach(function(item){
                             const option = {};
                             option.text = item.categoryName;
                             option.value = item.categoryId;
-                            objApp.categoryOptions.push(option)
+                            objApp.categoryOptions.push(option);
                         })
-                    } else {
+                    }else{
                         console.error(json);
                     }
-                })
+                });
+            const mid = sessionStorage.mid;
+            if(mid != null){
+                axios.get("/api/member/select_by_id?memberId=" + mid)
+                    .then(function(response){
+                        const json = response.data;
+                        if(json.code == "0"){
+                            objApp.state.isLogin = true;
+                            objApp.state.member = json.data.member;
+                        }else{
+                            console.error(json);
+                        }
+                    })
+            }
         }
     };
     const app = Vue.createApp(main);
