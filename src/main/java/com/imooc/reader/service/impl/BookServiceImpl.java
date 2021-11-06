@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.imooc.reader.entity.Book;
 import com.imooc.reader.mapper.BookMapper;
+import com.imooc.reader.mapper.EvaluationMapper;
+import com.imooc.reader.mapper.MemberReadStateMapper;
 import com.imooc.reader.service.BookService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,6 +20,10 @@ import java.util.Map;
 public class BookServiceImpl implements BookService {
     @Resource
     private BookMapper bookMapper;
+    @Resource
+    private EvaluationMapper evaluationMapper;
+    @Resource
+    private MemberReadStateMapper memberReadStateMapper;
     @Override
     public IPage<Book> selectPage(Long categoryId, String order, Integer page, Integer rows) {
         IPage<Book> p = new Page<>(page, rows);
@@ -61,5 +67,23 @@ public class BookServiceImpl implements BookService {
     public Book createBook(Book book) {
         bookMapper.insert(book);
         return book;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Book updateBook(Book book) {
+        bookMapper.updateById(book);
+        return book;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteBook(Long bookId) {
+        bookMapper.deleteById(bookId);
+        QueryWrapper wrapper1 = new QueryWrapper();
+        wrapper1.eq("book_id", bookId);
+        evaluationMapper.delete(wrapper1);
+        QueryWrapper wrapper2 = new QueryWrapper();
+        wrapper2.eq("book_id", bookId);
+        memberReadStateMapper.delete(wrapper2);
     }
 }

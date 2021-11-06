@@ -28,4 +28,8 @@ public interface BookService {
     public IPage<Map> selectBookMap(Integer page, Integer rows);
 
     public Book createBook(Book book);
+
+    public Book updateBook(Book book);
+
+    public void deleteBook(Long bookId);
 }
