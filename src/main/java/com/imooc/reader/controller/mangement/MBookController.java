@@ -3,11 +3,18 @@ package com.imooc.reader.controller.mangement;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.imooc.reader.service.BookService;
 import com.imooc.reader.utils.ResponseUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/management/book")
@@ -34,5 +41,20 @@ public class MBookController {
         }
         return resp;
 
+    }
+
+    @PostMapping("/upload")
+    public Map upload(@RequestParam("img") MultipartFile file, HttpServletRequest request) throws IOException {
+        //得到上传文件目录
+        String uploadPath = request.getServletContext().getResource("/").getPath() + "/upload/";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        String fileName = sdf.format(new Date());
+        //abc.jpg
+        String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+        file.transferTo(new File(uploadPath + fileName + suffix));
+        Map result = new LinkedHashMap();
+        result.put("errno", 0);
+        result.put("data", new String[]{"/upload/" + fileName + suffix});
+        return result;
     }
 }
