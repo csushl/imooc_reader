@@ -3,6 +3,8 @@ package com.imooc.reader.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.imooc.reader.entity.Book;
 
+import java.util.Map;
+
 public interface BookService {
     /**
      * 分页查询图书
@@ -22,4 +24,6 @@ public interface BookService {
     public Book selectById(Long bookId);
 
     public void updateScore();
+
+    public IPage<Map> selectBookMap(Integer page, Integer rows);
 }
