@@ -26,4 +26,6 @@ public interface BookService {
     public void updateScore();
 
     public IPage<Map> selectBookMap(Integer page, Integer rows);
+
+    public Book createBook(Book book);
 }
